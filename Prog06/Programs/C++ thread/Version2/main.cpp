@@ -8,6 +8,9 @@
 #include <iostream>
 #include <string>
 #include <random>
+#include <thread>
+#include <cstring>
+#include <mutex>
 //
 #include <cstdio>
 #include <cstdlib>
@@ -18,11 +21,13 @@
 
 using namespace std;
 
+std::mutex myMutex;
+bool continue_going = 1;
 //==================================================================================
 //	Function prototypes
 //==================================================================================
 void myKeyboard(unsigned char c, int x, int y);
-void initializeApplication(void);
+void initializeApplication(std::string& outputPath, std::vector<std::string>& Vec_of_FilePaths,std::vector<RasterImage*>& imageStack);
 
 
 //==================================================================================
@@ -35,7 +40,8 @@ extern int	gMainWindow;
 
 //	Don't rename any of these variables/constants
 //--------------------------------------------------
-unsigned int numLiveFocusingThreads = 0;		//	the number of live focusing threads
+
+unsigned int numLiveFocusingThreads = 0;	//	the number of live focusing threads
 
 //	An array of C-string where you can store things you want displayed in the spate pane
 //	that you want the state pane to display (for debugging purposes?)
@@ -78,7 +84,7 @@ uniform_int_distribution<unsigned int> colDist;
 #define IN_PATH		"./DataSets/Series02/"
 #define OUT_PATH	"./Output/"
 
-const string hardCodedOutPath = "./outputImage.tga";
+std::string outputPath;
 
 //==================================================================================
 //	These are the functions that tie the computation with the rendering.
@@ -103,21 +109,7 @@ void displayImage(GLfloat scaleX, GLfloat scaleY)
 	//	Here, each time we render the image I assign a random
 	//	color to a few random pixels
 	//--------------------------------------------------------
-	unsigned char** imgRaster2D = (unsigned char**)(imageOut->raster2D);
 	
-	for (int k=0; k<100; k++) {
-		unsigned int i = rowDist(myEngine);
-		unsigned int j = colDist(myEngine);
-
-		//	get pointer to the pixel at row i, column j
-		unsigned char* rgba = imgRaster2D[i] + 4*j;
-		// random r, g, b
-		rgba[0] = colorChannelDist(myEngine);
-		rgba[1] = colorChannelDist(myEngine);
-		rgba[2] = colorChannelDist(myEngine);
-		//	keep alpha unchanged at 255
-	}
-
 	//==============================================
 	//	This is OpenGL/glut magic.  Don't touch
 	//==============================================
@@ -148,7 +140,7 @@ void displayState(void)
 	numMessages = 3;
 	sprintf(message[0], "System time: %ld", currentTime);
 	sprintf(message[1], "Time since launch: %ld", currentTime-launchTime);
-	sprintf(message[2], "I like cheese");
+	sprintf(message[2], "I like Cheese");
 	
 	
 	//---------------------------------------------------------
@@ -163,7 +155,7 @@ void displayState(void)
 
 void cleanupAndQuit(void)
 {
-	writeTGA(hardCodedOutPath.c_str(), imageOut);
+	writeTGA(outputPath.c_str(), imageOut);
 
 	//	Free allocated resource before leaving (not absolutely needed, but
 	//	just nicer.  Also, if you crash there, you know something is wrong
@@ -209,16 +201,136 @@ void handleKeyboardEvent(unsigned char c, int x, int y)
 //------------------------------------------------------------------------
 //	You shouldn't have to change anything in the main function.
 //------------------------------------------------------------------------
+
+double convertToGrayscale(RasterImage* image, int row, int col) {
+    if (image->type == RGBA32_RASTER) {
+        unsigned char** raster2D = (unsigned char**) image->raster2D;
+        unsigned char* pixel = raster2D[row] + col * 4;
+
+        // Average of RGB values
+        return (pixel[0] + pixel[1] + pixel[2]) / 3.0;
+    }
+    else if (image->type == GRAY_RASTER) {
+        unsigned char** raster2D = (unsigned char**) image->raster2D;
+        return raster2D[row][col];
+    }
+    return 0;
+}
+
+
+void copyPixel(RasterImage* srcImage, RasterImage* dstImage, int row, int col) {
+    if (srcImage->type == RGBA32_RASTER && dstImage->type == RGBA32_RASTER) {
+        unsigned char** srcRaster2D = (unsigned char**) srcImage->raster2D;
+        unsigned char** dstRaster2D = (unsigned char**) dstImage->raster2D;
+
+        for (int i = 0; i < 4; i++) { // Copy RGBA channels
+            dstRaster2D[row][col * 4 + i] = srcRaster2D[row][col * 4 + i];
+        }
+    }
+    else if (srcImage->type == GRAY_RASTER && dstImage->type == GRAY_RASTER) {
+        unsigned char** srcRaster2D = (unsigned char**) srcImage->raster2D;
+        unsigned char** dstRaster2D = (unsigned char**) dstImage->raster2D;
+
+        dstRaster2D[row][col] = srcRaster2D[row][col];
+    }
+}
+
+
+
+double calculateWindowContrast(RasterImage* image, int centerRow, int centerCol, int windowSize) {
+    double minGray = 255.0, maxGray = 0.0;
+
+    // Loop over the window centered at (centerRow, centerCol)
+    for (int i = -windowSize / 2; i <= windowSize / 2; i++) {
+        for (int j = -windowSize / 2; j <= windowSize / 2; j++) {
+            unsigned int currentRow = centerRow + i;
+            unsigned int currentCol = centerCol + j;
+
+            // Check bounds
+            if (currentRow >= 0 && currentRow < image->height && currentCol >= 0 && currentCol < image->width) {
+                double gray = convertToGrayscale(image, currentRow, currentCol);
+                minGray = std::min(minGray, gray);
+                maxGray = std::max(maxGray, gray);
+            }
+        }
+    }
+
+    return maxGray - minGray; // Contrast is the range of grayscale values
+}
+
+
+void focusStackingThread(std::vector<RasterImage*> imageStack, RasterImage* outputImage) {
+    std::default_random_engine generator;
+    std::uniform_int_distribution<int> distributionRow(0, outputImage->height - 1);
+    std::uniform_int_distribution<int> distributionCol(0, outputImage->width - 1);
+    int windowSize = 11; // Or 13 as per your requirement
+
+    while (continue_going) {
+        int centerRow = distributionRow(generator);  // Random row
+        int centerCol = distributionCol(generator);  // Random column
+
+        double highestContrast = -1.0;
+        int bestImageIndex = -1;
+
+        // Calculate contrast and find best image
+        for (size_t imgIndex = 0; imgIndex < imageStack.size(); ++imgIndex) {
+            double contrast = calculateWindowContrast(imageStack[imgIndex], centerRow, centerCol, windowSize);
+            if (contrast > highestContrast) {
+                highestContrast = contrast;
+                bestImageIndex = imgIndex;
+            }
+        }
+
+        // Lock for writing to the output image
+        std::lock_guard<std::mutex> guard(myMutex);
+        if (bestImageIndex != -1) {
+            // Write pixels from the best image to the output image
+            for (int i = -windowSize / 2; i <= windowSize / 2; ++i) {
+                for (int j = -windowSize / 2; j <= windowSize / 2; ++j) {
+                    unsigned int targetRow = centerRow + i;
+                    unsigned int targetCol = centerCol + j;
+                    if (targetRow >= 0 && targetRow < outputImage->height && targetCol >= 0 && targetCol < outputImage->width) {
+                        copyPixel(imageStack[bestImageIndex], outputImage, targetRow, targetCol);
+                    }
+                }
+            }
+        }
+    }
+}
+
+
 int main(int argc, char** argv)
 {
+
+	if (argc < 4) {
+        cerr << "Usage: " << argv[0] << " <num_threads> <output_path> <input_path>" << endl;
+        return 1;
+    }
+
+    int numThreads = atoi(argv[1]);
+    outputPath = argv[2];
+	std::vector<std::string> Vec_of_FilePaths;
+	for(int i = 3; i < argc; i++){
+     Vec_of_FilePaths.push_back(argv[i]);
+	}
+	std::vector<RasterImage*> imageStack;
 	//	Now we can do application-level initialization
-	initializeApplication();
+	initializeApplication(outputPath,Vec_of_FilePaths,imageStack);
 
 	//	Even though we extracted the relevant information from the argument
 	//	list, I still need to pass argc and argv to the front-end init
 	//	function because that function passes them to glutInit, the required call
 	//	to the initialization of the glut library.
 	initializeFrontEnd(argc, argv, imageOut);
+
+	// Create and start threads
+	std::vector<std::thread> threads;
+	for (int i = 0; i < numThreads; ++i) {
+		threads.emplace_back(focusStackingThread, imageStack, imageOut);
+	}
+
+	// Wait for all threads to complete
+	
 	
 
 	//==============================================
@@ -229,7 +341,11 @@ int main(int argc, char** argv)
 	//	we set up earlier will be called when the corresponding event
 	//	occurs
 	glutMainLoop();
-		
+	
+
+	for (auto& thread : threads) {
+		thread.join();
+    }
 	//	This will probably never be executed (the exit point will be in one of the
 	//	call back functions).
 	return 0;
@@ -242,8 +358,12 @@ int main(int argc, char** argv)
 //	(right now it is initialized simply by reading an image into it.
 //==================================================================================
 
-void initializeApplication(void)
-{
+
+
+
+
+
+void initializeApplication(std::string& outputPath, std::vector<std::string>& Vec_of_FilePaths,std::vector<RasterImage*>& imageStack){
 
 	//	I preallocate the max number of messages at the max message
 	//	length.  This goes against some of my own principles about
@@ -255,30 +375,21 @@ void initializeApplication(void)
 	for (int k=0; k<MAX_NUM_MESSAGES; k++)
 		message[k] = (char*) malloc((MAX_LENGTH_MESSAGE+1)*sizeof(char));
 	
-	//---------------------------------------------------------------
-	//	All the code below to be replaced/removed
-	//	I load an image to have something to look at
-	//---------------------------------------------------------------
-	//	Yes, I am using the C random generator, although I usually rant on and on
-	//	that the C/C++ default random generator is junk and that the people who use it
-	//	are at best fools.  Here I am not using it to produce "serious" data (as in a
-	//	simulation), only some color, in meant-to-be-thrown-away code
-	
-	//	seed the pseudo-random generator
-	srand((unsigned int) time(NULL));
+	// Inside initializeApplication function
 
-	//	right now I read *one* hardcoded image, into my output
-	//	image. This is definitely something that you will want to
-	//	change.
-	const string hardCodedInput = "../TempData/_MG_6386.tga";
-	imageOut = readTGA(hardCodedInput.c_str());
-	
-	//	Having read my image, I can now initialize my random distributions
-	rowDist = uniform_int_distribution<unsigned int>(0, imageOut->height-1);
-	colDist = uniform_int_distribution<unsigned int>(0, imageOut->width-1);
+// Load the image stack
+	for(const auto& filePath : Vec_of_FilePaths) {
+		RasterImage* img = readTGA(filePath.c_str());
+		imageStack.push_back(img);
+	}
+
+	// Initialize the output image
+	// Assuming all images in the stack have the same dimensions
+	if(!imageStack.empty()){
+		imageOut = new RasterImage(imageStack[0]->width, imageStack[0]->height, imageStack[0]->type);
+	}
 	
 	launchTime = time(NULL);
 }
-
 
 
