@@ -8,6 +8,8 @@
 #include <iostream>
 #include <string>
 #include <random>
+#include <thread>
+#include <cstring>
 //
 #include <cstdio>
 #include <cstdlib>
@@ -22,7 +24,7 @@ using namespace std;
 //	Function prototypes
 //==================================================================================
 void myKeyboard(unsigned char c, int x, int y);
-void initializeApplication(void);
+void initializeApplication(int& numThreads,std::string& outputPath, std::vector<std::string>& Vec_of_FilePaths);
 
 
 //==================================================================================
@@ -103,20 +105,12 @@ void displayImage(GLfloat scaleX, GLfloat scaleY)
 	//	Here, each time we render the image I assign a random
 	//	color to a few random pixels
 	//--------------------------------------------------------
-	unsigned char** imgRaster2D = (unsigned char**)(imageOut->raster2D);
-	
-	for (int k=0; k<100; k++) {
-		unsigned int i = rowDist(myEngine);
-		unsigned int j = colDist(myEngine);
 
-		//	get pointer to the pixel at row i, column j
-		unsigned char* rgba = imgRaster2D[i] + 4*j;
-		// random r, g, b
-		rgba[0] = colorChannelDist(myEngine);
-		rgba[1] = colorChannelDist(myEngine);
-		rgba[2] = colorChannelDist(myEngine);
-		//	keep alpha unchanged at 255
-	}
+    // Render the image
+    glDrawPixels(imageOut->width, imageOut->height, GL_RGBA, GL_UNSIGNED_BYTE, imageOut->raster);
+
+    // Swap buffers to display the image
+    glutSwapBuffers();
 
 	//==============================================
 	//	This is OpenGL/glut magic.  Don't touch
@@ -211,8 +205,20 @@ void handleKeyboardEvent(unsigned char c, int x, int y)
 //------------------------------------------------------------------------
 int main(int argc, char** argv)
 {
+
+	if (argc < 4) {
+        cerr << "Usage: " << argv[0] << " <num_threads> <output_path> <input_path>" << endl;
+        return 1;
+    }
+
+    int numThreads = atoi(argv[1]);
+    std::string outputPath = argv[2];
+	std::vector<std::string> Vec_of_FilePaths;
+	for(int i = 3; i < argc; i++){
+     Vec_of_FilePaths.push_back(argv[i]);
+	}
 	//	Now we can do application-level initialization
-	initializeApplication();
+	initializeApplication(numThreads,outputPath,Vec_of_FilePaths);
 
 	//	Even though we extracted the relevant information from the argument
 	//	list, I still need to pass argc and argv to the front-end init
@@ -241,8 +247,83 @@ int main(int argc, char** argv)
 //	load a complete stack of images and initialize the output image
 //	(right now it is initialized simply by reading an image into it.
 //==================================================================================
+double convertToGrayscale(RasterImage* image, int row, int col) {
+    if (image->type == RGBA32_RASTER) {
+        unsigned char** raster2D = (unsigned char**) image->raster2D;
+        unsigned char* pixel = raster2D[row] + col * 4;
 
-void initializeApplication(void)
+        // Average of RGB values
+        return (pixel[0] + pixel[1] + pixel[2]) / 3.0;
+    }
+    else if (image->type == GRAY_RASTER) {
+        unsigned char** raster2D = (unsigned char**) image->raster2D;
+        return raster2D[row][col];
+    }
+    return 0;
+}
+
+void copyPixel(RasterImage* srcImage, RasterImage* dstImage, int row, int col) {
+    if (srcImage->type == RGBA32_RASTER && dstImage->type == RGBA32_RASTER) {
+        unsigned char** srcRaster2D = (unsigned char**) srcImage->raster2D;
+        unsigned char** dstRaster2D = (unsigned char**) dstImage->raster2D;
+
+        for (int i = 0; i < 4; i++) { // Copy RGBA channels
+            dstRaster2D[row][col * 4 + i] = srcRaster2D[row][col * 4 + i];
+        }
+    }
+    else if (srcImage->type == GRAY_RASTER && dstImage->type == GRAY_RASTER) {
+        unsigned char** srcRaster2D = (unsigned char**) srcImage->raster2D;
+        unsigned char** dstRaster2D = (unsigned char**) dstImage->raster2D;
+
+        dstRaster2D[row][col] = srcRaster2D[row][col];
+    }
+
+}
+
+
+
+double calculateWindowContrast(RasterImage* image, int row, int col) {
+    double minGray = 255.0, maxGray = 0.0;
+
+    for (int i = -2; i <= 2; i++) {
+        for (int j = -2; j <= 2; j++) {
+            unsigned int neighborRow = row + i;
+            unsigned int neighborCol = col + j;
+            if (neighborRow >= 0 && neighborRow < image->height && neighborCol >= 0 && neighborCol < image->width) {
+                double gray = convertToGrayscale(image, neighborRow, neighborCol);
+                minGray = std::min(minGray, gray);
+                maxGray = std::max(maxGray, gray);
+            }
+        }
+    }
+
+    return maxGray - minGray; // Contrast is the range of grayscale values
+}
+
+
+void focusStackingThread(std::vector<RasterImage*> imageStack, RasterImage* outputImage, int startRow, int endRow) {
+    for (int row = startRow; row < endRow; ++row) {
+        for (unsigned int col = 0; col < outputImage->width; ++col) {
+            double highestContrast = -1.0;
+            int bestImageIndex = -1;
+
+            for (size_t imgIndex = 0; imgIndex < imageStack.size(); ++imgIndex) {
+                double contrast = calculateWindowContrast(imageStack[imgIndex], row, col);
+                if (contrast > highestContrast) {
+                    highestContrast = contrast;
+                    bestImageIndex = imgIndex;
+                }
+            }
+
+            if (bestImageIndex != -1) {
+                copyPixel(imageStack[bestImageIndex], outputImage, row, col);
+            }
+        }
+    }
+}
+
+
+void initializeApplication(int& numThreads,std::string& outputPath, std::vector<std::string>& Vec_of_FilePaths)
 {
 
 	//	I preallocate the max number of messages at the max message
@@ -255,29 +336,39 @@ void initializeApplication(void)
 	for (int k=0; k<MAX_NUM_MESSAGES; k++)
 		message[k] = (char*) malloc((MAX_LENGTH_MESSAGE+1)*sizeof(char));
 	
-	//---------------------------------------------------------------
-	//	All the code below to be replaced/removed
-	//	I load an image to have something to look at
-	//---------------------------------------------------------------
-	//	Yes, I am using the C random generator, although I usually rant on and on
-	//	that the C/C++ default random generator is junk and that the people who use it
-	//	are at best fools.  Here I am not using it to produce "serious" data (as in a
-	//	simulation), only some color, in meant-to-be-thrown-away code
-	
-	//	seed the pseudo-random generator
-	srand((unsigned int) time(NULL));
+	// Inside initializeApplication function
 
-	//	right now I read *one* hardcoded image, into my output
-	//	image. This is definitely something that you will want to
-	//	change.
-	const string hardCodedInput = "../TempData/_MG_6386.tga";
-	imageOut = readTGA(hardCodedInput.c_str());
-	
-	//	Having read my image, I can now initialize my random distributions
-	rowDist = uniform_int_distribution<unsigned int>(0, imageOut->height-1);
-	colDist = uniform_int_distribution<unsigned int>(0, imageOut->width-1);
+// Load the image stack
+	std::vector<RasterImage*> imageStack;
+	for(const auto& filePath : Vec_of_FilePaths) {
+		RasterImage* img = readTGA(filePath.c_str());
+		imageStack.push_back(img);
+	}
+
+	// Initialize the output image
+	// Assuming all images in the stack have the same dimensions
+	if(!imageStack.empty()){
+		imageOut = new RasterImage(imageStack[0]->width, imageStack[0]->height, imageStack[0]->type);
+
+		int rowsPerThread = imageOut->height / numThreads;
+
+		// Create and start threads
+		std::vector<std::thread> threads;
+		for (int i = 0; i < numThreads; ++i) {
+			int startRow = i * rowsPerThread;
+			int endRow = (i == numThreads - 1) ? imageOut->height : startRow + rowsPerThread;
+			threads.emplace_back(focusStackingThread, imageStack, imageOut, startRow, endRow);
+		}
+
+		// Wait for all threads to complete
+		for (auto& thread : threads) {
+			thread.join();
+    	}
+	}
+
 	
 	launchTime = time(NULL);
+	writeTGA(outputPath.c_str(), imageOut);
 }
 
 
