@@ -1,3 +1,14 @@
+/**
+ * @file main.cpp
+ * @brief Example of Multithreaded with a single locks using pthreads
+ * 
+ * This is an example of focus Stacking an image
+ * 
+ * @author Harry Grenier
+ * @date 12/3/2023
+ */
+
+
 #include <iostream>
 #include <string>
 #include <random>

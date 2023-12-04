@@ -1,0 +1,585 @@
+\hypertarget{pthread_2Version2_2main_8cpp}{}\doxysection{/home/harry/\+Desktop/412\+\_\+assignment06/\+Prog06/\+Programs/pthread/\+Version2/main.cpp File Reference}
+\label{pthread_2Version2_2main_8cpp}\index{/home/harry/Desktop/412\_assignment06/Prog06/Programs/pthread/Version2/main.cpp@{/home/harry/Desktop/412\_assignment06/Prog06/Programs/pthread/Version2/main.cpp}}
+
+
+Example of Multithreaded with a single locks using pthreads.  
+
+
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$random$>$}\newline
+{\ttfamily \#include $<$pthread.\+h$>$}\newline
+{\ttfamily \#include $<$cstring$>$}\newline
+{\ttfamily \#include $<$cstdio$>$}\newline
+{\ttfamily \#include $<$cstdlib$>$}\newline
+{\ttfamily \#include $<$time.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}gl\+\_\+front\+End.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Image\+IO\+\_\+\+TGA.\+h\char`\"{}}\newline
+Include dependency graph for main.\+cpp\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{pthread_2Version2_2main_8cpp__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structThreadData}{Thread\+Data}}
+\begin{DoxyCompactList}\small\item\em A struct to hold thread-\/specific data for focus stacking. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_ae80df408f51385451e897684f2b5f274}\label{pthread_2Version2_2main_8cpp_ae80df408f51385451e897684f2b5f274}} 
+\#define \mbox{\hyperlink{pthread_2Version2_2main_8cpp_ae80df408f51385451e897684f2b5f274}{IN\+\_\+\+PATH}}~\char`\"{}./Data\+Sets/Series02/\char`\"{}
+\begin{DoxyCompactList}\small\item\em Path to input dataset. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_a373f1e5c6da7a0ff70afb065956ddd77}\label{pthread_2Version2_2main_8cpp_a373f1e5c6da7a0ff70afb065956ddd77}} 
+\#define \mbox{\hyperlink{pthread_2Version2_2main_8cpp_a373f1e5c6da7a0ff70afb065956ddd77}{OUT\+\_\+\+PATH}}~\char`\"{}./Output/\char`\"{}
+\begin{DoxyCompactList}\small\item\em Path for output. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{pthread_2Version2_2main_8cpp_a2380242ef771b5a0d59cce4a680dc9df}{my\+Keyboard}} (unsigned char c, int x, int y)
+\begin{DoxyCompactList}\small\item\em Handles keyboard events. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{pthread_2Version2_2main_8cpp_a2e20974b164272064b3fd1c2442711fe}{initialize\+Application}} (std\+::string \&\mbox{\hyperlink{pthread_2Version3_2main_8cpp_af8b2bd66ffc3fbf507c9d89cadfacf27}{output\+Path}}, std\+::vector$<$ std\+::string $>$ \&Vec\+\_\+of\+\_\+\+File\+Paths, std\+::vector$<$ \mbox{\hyperlink{structRasterImage}{Raster\+Image}} $\ast$ $>$ \&image\+Stack)
+\begin{DoxyCompactList}\small\item\em Initializes the application. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{pthread_2Version2_2main_8cpp_ac399384fc2ecfcd7d6907e6755a5d324}{convert\+To\+Grayscale}} (\mbox{\hyperlink{structRasterImage}{Raster\+Image}} $\ast$image, int row, int col)
+\begin{DoxyCompactList}\small\item\em Function used to converts a pixel to its gray scale value. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{pthread_2Version2_2main_8cpp_a3c2758e12ecc0d8200eb134227894101}{copy\+Pixel}} (\mbox{\hyperlink{structRasterImage}{Raster\+Image}} $\ast$src\+Image, \mbox{\hyperlink{structRasterImage}{Raster\+Image}} $\ast$dst\+Image, int row, int col)
+\begin{DoxyCompactList}\small\item\em Function used to Write the best pixel to the Output Image. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{pthread_2Version2_2main_8cpp_a32dbf091cfab381ea469c645307a8ba8}{calculate\+Window\+Contrast}} (\mbox{\hyperlink{structRasterImage}{Raster\+Image}} $\ast$image, int center\+Row, int center\+Col, int window\+Size)
+\begin{DoxyCompactList}\small\item\em Function used to calculate the windows contrast. \end{DoxyCompactList}\item 
+void $\ast$ \mbox{\hyperlink{pthread_2Version2_2main_8cpp_a3a916f61fd1ca9569605594e28c2c567}{focus\+Stacking\+Thread}} (void $\ast$arg)
+\begin{DoxyCompactList}\small\item\em Function used for the work of each thread. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_a45ba06cad23dad557770ecff4b50076f}\label{pthread_2Version2_2main_8cpp_a45ba06cad23dad557770ecff4b50076f}} 
+default\+\_\+random\+\_\+engine \mbox{\hyperlink{pthread_2Version2_2main_8cpp_a45ba06cad23dad557770ecff4b50076f}{my\+Engine}} (\mbox{\hyperlink{pthread_2Version3_2main_8cpp_a36b8bca31f9ad8ab6e1100d25041df14}{my\+Rand\+Dev}}())
+\begin{DoxyCompactList}\small\item\em Random engine based on my\+Rand\+Dev. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{pthread_2Version2_2main_8cpp_a2c5d4d7afedea4d90f963d27b78adb44}{display\+Image}} (GLfloat scaleX, GLfloat scaleY)
+\begin{DoxyCompactList}\small\item\em Displays the processed image. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_a7117f3f4ce13b54648ffebe53b7f3141}\label{pthread_2Version2_2main_8cpp_a7117f3f4ce13b54648ffebe53b7f3141}} 
+void \mbox{\hyperlink{pthread_2Version2_2main_8cpp_a7117f3f4ce13b54648ffebe53b7f3141}{display\+State}} (void)
+\begin{DoxyCompactList}\small\item\em Displays the information to the side of the GUI window. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{pthread_2Version2_2main_8cpp_adbd7aa49884fcaf06d399f21dcf93537}{cleanup\+And\+Quit}} (void)
+\begin{DoxyCompactList}\small\item\em Cleans up and exits the application. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_a4e3aad696a6bfbc2d854fbe9ab89a288}\label{pthread_2Version2_2main_8cpp_a4e3aad696a6bfbc2d854fbe9ab89a288}} 
+void \mbox{\hyperlink{pthread_2Version2_2main_8cpp_a4e3aad696a6bfbc2d854fbe9ab89a288}{handle\+Keyboard\+Event}} (unsigned char c, int x, int y)
+\begin{DoxyCompactList}\small\item\em Watches for keyboard control. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{pthread_2Version2_2main_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}{main}} (int argc, char $\ast$$\ast$argv)
+\begin{DoxyCompactList}\small\item\em Main function of the application. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_a3abafe9c2d4f7089ffbd6138bab2c747}\label{pthread_2Version2_2main_8cpp_a3abafe9c2d4f7089ffbd6138bab2c747}} 
+pthread\+\_\+mutex\+\_\+t \mbox{\hyperlink{pthread_2Version2_2main_8cpp_a3abafe9c2d4f7089ffbd6138bab2c747}{my\+Mutex}} = PTHREAD\+\_\+\+MUTEX\+\_\+\+INITIALIZER
+\begin{DoxyCompactList}\small\item\em Global mutex used for synchronization. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_a57448c606d448281e8bc23a38ecbf7d8}\label{pthread_2Version2_2main_8cpp_a57448c606d448281e8bc23a38ecbf7d8}} 
+int \mbox{\hyperlink{pthread_2Version2_2main_8cpp_a57448c606d448281e8bc23a38ecbf7d8}{g\+Main\+Window}}
+\begin{DoxyCompactList}\small\item\em External variable representing the main window in the front-\/end. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_a01367c67f496047c0c8d1704c84e2927}\label{pthread_2Version2_2main_8cpp_a01367c67f496047c0c8d1704c84e2927}} 
+unsigned int \mbox{\hyperlink{pthread_2Version2_2main_8cpp_a01367c67f496047c0c8d1704c84e2927}{num\+Live\+Focusing\+Threads}} = 0
+\begin{DoxyCompactList}\small\item\em Count of the number of threads currently focusing on the image. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_a6f4acdbb98c3308e1e755cf5e01a4fe7}\label{pthread_2Version2_2main_8cpp_a6f4acdbb98c3308e1e755cf5e01a4fe7}} 
+const int \mbox{\hyperlink{pthread_2Version2_2main_8cpp_a6f4acdbb98c3308e1e755cf5e01a4fe7}{MAX\+\_\+\+NUM\+\_\+\+MESSAGES}} = 8
+\begin{DoxyCompactList}\small\item\em Maximum number of messages to display. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_a4427879eb43005a709988ec34c6d0536}\label{pthread_2Version2_2main_8cpp_a4427879eb43005a709988ec34c6d0536}} 
+const int \mbox{\hyperlink{pthread_2Version2_2main_8cpp_a4427879eb43005a709988ec34c6d0536}{MAX\+\_\+\+LENGTH\+\_\+\+MESSAGE}} = 32
+\begin{DoxyCompactList}\small\item\em Maximum length of each message. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_a5a71782ebcbf35c821859558761c76f7}\label{pthread_2Version2_2main_8cpp_a5a71782ebcbf35c821859558761c76f7}} 
+char $\ast$$\ast$ \mbox{\hyperlink{pthread_2Version2_2main_8cpp_a5a71782ebcbf35c821859558761c76f7}{message}}
+\begin{DoxyCompactList}\small\item\em Array of messages for display. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_a609e56f51702f53ff061d59b83a21f68}\label{pthread_2Version2_2main_8cpp_a609e56f51702f53ff061d59b83a21f68}} 
+int \mbox{\hyperlink{pthread_2Version2_2main_8cpp_a609e56f51702f53ff061d59b83a21f68}{num\+Messages}}
+\begin{DoxyCompactList}\small\item\em Number of messages currently used. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_a58f95dced7f33e61073e92078b2cff24}\label{pthread_2Version2_2main_8cpp_a58f95dced7f33e61073e92078b2cff24}} 
+time\+\_\+t \mbox{\hyperlink{pthread_2Version2_2main_8cpp_a58f95dced7f33e61073e92078b2cff24}{launch\+Time}}
+\begin{DoxyCompactList}\small\item\em Time at application launch. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_a1c84f229fd05c8cc02fd150670dfc06c}\label{pthread_2Version2_2main_8cpp_a1c84f229fd05c8cc02fd150670dfc06c}} 
+\mbox{\hyperlink{structRasterImage}{Raster\+Image}} $\ast$ \mbox{\hyperlink{pthread_2Version2_2main_8cpp_a1c84f229fd05c8cc02fd150670dfc06c}{image\+Out}}
+\begin{DoxyCompactList}\small\item\em Pointer to the output image. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_a36b8bca31f9ad8ab6e1100d25041df14}\label{pthread_2Version2_2main_8cpp_a36b8bca31f9ad8ab6e1100d25041df14}} 
+random\+\_\+device \mbox{\hyperlink{pthread_2Version2_2main_8cpp_a36b8bca31f9ad8ab6e1100d25041df14}{my\+Rand\+Dev}}
+\begin{DoxyCompactList}\small\item\em Random device for generating random numbers. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_aa4f45c8896b2400f40b75ddf4c412d47}\label{pthread_2Version2_2main_8cpp_aa4f45c8896b2400f40b75ddf4c412d47}} 
+uniform\+\_\+int\+\_\+distribution$<$ unsigned char $>$ \mbox{\hyperlink{pthread_2Version2_2main_8cpp_aa4f45c8896b2400f40b75ddf4c412d47}{color\+Channel\+Dist}}
+\begin{DoxyCompactList}\small\item\em Distribution for generating random RGB values. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_a1c0d86e72978c3453b1a01281562af70}\label{pthread_2Version2_2main_8cpp_a1c0d86e72978c3453b1a01281562af70}} 
+uniform\+\_\+int\+\_\+distribution$<$ unsigned int $>$ \mbox{\hyperlink{pthread_2Version2_2main_8cpp_a1c0d86e72978c3453b1a01281562af70}{row\+Dist}}
+\begin{DoxyCompactList}\small\item\em Distribution for generating random row indices. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_a9673286ad872d335cdbb4ca4bca9c9d8}\label{pthread_2Version2_2main_8cpp_a9673286ad872d335cdbb4ca4bca9c9d8}} 
+uniform\+\_\+int\+\_\+distribution$<$ unsigned int $>$ \mbox{\hyperlink{pthread_2Version2_2main_8cpp_a9673286ad872d335cdbb4ca4bca9c9d8}{col\+Dist}}
+\begin{DoxyCompactList}\small\item\em Distribution for generating random column indices. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_af8b2bd66ffc3fbf507c9d89cadfacf27}\label{pthread_2Version2_2main_8cpp_af8b2bd66ffc3fbf507c9d89cadfacf27}} 
+std\+::string \mbox{\hyperlink{pthread_2Version2_2main_8cpp_af8b2bd66ffc3fbf507c9d89cadfacf27}{output\+Path}}
+\begin{DoxyCompactList}\small\item\em Path to the output image file. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Example of Multithreaded with a single locks using pthreads. 
+
+This is an example of focus Stacking an image
+
+\begin{DoxyAuthor}{Author}
+Harry Grenier 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+12/3/2023 
+\end{DoxyDate}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_a32dbf091cfab381ea469c645307a8ba8}\label{pthread_2Version2_2main_8cpp_a32dbf091cfab381ea469c645307a8ba8}} 
+\index{main.cpp@{main.cpp}!calculateWindowContrast@{calculateWindowContrast}}
+\index{calculateWindowContrast@{calculateWindowContrast}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{calculateWindowContrast()}{calculateWindowContrast()}}
+{\footnotesize\ttfamily double calculate\+Window\+Contrast (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structRasterImage}{Raster\+Image}} $\ast$}]{image,  }\item[{int}]{center\+Row,  }\item[{int}]{center\+Col,  }\item[{int}]{window\+Size }\end{DoxyParamCaption})}
+
+
+
+Function used to calculate the windows contrast. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em image} & Pointer to the image to consider \\
+\hline
+{\em center\+Row} & Stores the middle row of the Window \\
+\hline
+{\em center\+Col} & Stores the middle collumn of the window \\
+\hline
+{\em window\+Size} & Stores the size of the window to examine \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Contrast 
+\end{DoxyReturn}
+
+
+Definition at line 406 of file main.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{406                                                                                                  \{}
+\DoxyCodeLine{407     \textcolor{keywordtype}{double} minGray = 255.0, maxGray = 0.0;}
+\DoxyCodeLine{408 }
+\DoxyCodeLine{409     \textcolor{comment}{// Loop over the window centered at (centerRow, centerCol)}}
+\DoxyCodeLine{410     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = -\/windowSize / 2; i <= windowSize / 2; i++) \{}
+\DoxyCodeLine{411         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} j = -\/windowSize / 2; j <= windowSize / 2; j++) \{}
+\DoxyCodeLine{412             \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} currentRow = centerRow + i;}
+\DoxyCodeLine{413             \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} currentCol = centerCol + j;}
+\DoxyCodeLine{414 }
+\DoxyCodeLine{415             \textcolor{comment}{// Check bounds}}
+\DoxyCodeLine{416             \textcolor{keywordflow}{if} (currentRow >= 0 \&\& currentRow < image-\/>height \&\& currentCol >= 0 \&\& currentCol < image-\/>width) \{}
+\DoxyCodeLine{417                 \textcolor{keywordtype}{double} gray = \mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_ac399384fc2ecfcd7d6907e6755a5d324}{convertToGrayscale}}(image, currentRow, currentCol);}
+\DoxyCodeLine{418                 minGray = std::min(minGray, gray);}
+\DoxyCodeLine{419                 maxGray = std::max(maxGray, gray);}
+\DoxyCodeLine{420             \}}
+\DoxyCodeLine{421         \}}
+\DoxyCodeLine{422     \}}
+\DoxyCodeLine{423 }
+\DoxyCodeLine{424     \textcolor{keywordflow}{return} maxGray -\/ minGray; \textcolor{comment}{// Contrast is the range of grayscale values}}
+\DoxyCodeLine{425 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_adbd7aa49884fcaf06d399f21dcf93537}\label{pthread_2Version2_2main_8cpp_adbd7aa49884fcaf06d399f21dcf93537}} 
+\index{main.cpp@{main.cpp}!cleanupAndQuit@{cleanupAndQuit}}
+\index{cleanupAndQuit@{cleanupAndQuit}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{cleanupAndQuit()}{cleanupAndQuit()}}
+{\footnotesize\ttfamily void cleanup\+And\+Quit (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Cleans up and exits the application. 
+
+this function writes the image and cleans up any allocated memory 
+
+Definition at line 202 of file main.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{203 \{}
+\DoxyCodeLine{204     writeTGA(\mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_af8b2bd66ffc3fbf507c9d89cadfacf27}{outputPath}}.c\_str(), \mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_a1c84f229fd05c8cc02fd150670dfc06c}{imageOut}});}
+\DoxyCodeLine{205 }
+\DoxyCodeLine{206     \textcolor{comment}{//  Free allocated resource before leaving (not absolutely needed, but}}
+\DoxyCodeLine{207     \textcolor{comment}{//  just nicer.  Also, if you crash there, you know something is wrong}}
+\DoxyCodeLine{208     \textcolor{comment}{//  in your code.}}
+\DoxyCodeLine{209     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} k=0; k<\mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_a6f4acdbb98c3308e1e755cf5e01a4fe7}{MAX\_NUM\_MESSAGES}}; k++)}
+\DoxyCodeLine{210         free(\mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_a5a71782ebcbf35c821859558761c76f7}{message}}[k]);}
+\DoxyCodeLine{211     free(\mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_a5a71782ebcbf35c821859558761c76f7}{message}});}
+\DoxyCodeLine{212 }
+\DoxyCodeLine{213     \textcolor{comment}{// delete images [optional]}}
+\DoxyCodeLine{214     pthread\_mutex\_destroy(\&\mbox{\hyperlink{C_09_09__thread_2Version2_2main_8cpp_a0a0faabdb84971a0a12bec397e68c35c}{myMutex}});}
+\DoxyCodeLine{215     exit(0);}
+\DoxyCodeLine{216 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_ac399384fc2ecfcd7d6907e6755a5d324}\label{pthread_2Version2_2main_8cpp_ac399384fc2ecfcd7d6907e6755a5d324}} 
+\index{main.cpp@{main.cpp}!convertToGrayscale@{convertToGrayscale}}
+\index{convertToGrayscale@{convertToGrayscale}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{convertToGrayscale()}{convertToGrayscale()}}
+{\footnotesize\ttfamily double convert\+To\+Grayscale (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structRasterImage}{Raster\+Image}} $\ast$}]{image,  }\item[{int}]{row,  }\item[{int}]{col }\end{DoxyParamCaption})}
+
+
+
+Function used to converts a pixel to its gray scale value. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em image} & Image to read from \\
+\hline
+{\em row} & Row of the pixel to convert \\
+\hline
+{\em col} & Column of the pixel to convert \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Exit status. 
+\end{DoxyReturn}
+
+
+Definition at line 358 of file main.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{358                                                                 \{}
+\DoxyCodeLine{359     \textcolor{keywordflow}{if} (image-\/>\mbox{\hyperlink{structRasterImage_a4479a994a2f19c14d9c68a19c9d8061c}{type}} == RGBA32\_RASTER) \{}
+\DoxyCodeLine{360         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}** raster2D = (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}**) image-\/>raster2D;}
+\DoxyCodeLine{361         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}* pixel = raster2D[row] + col * 4;}
+\DoxyCodeLine{362 }
+\DoxyCodeLine{363         \textcolor{comment}{// Average of RGB values}}
+\DoxyCodeLine{364         return (pixel[0] + pixel[1] + pixel[2]) / 3.0;}
+\DoxyCodeLine{365     \}}
+\DoxyCodeLine{366     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (image-\/>\mbox{\hyperlink{structRasterImage_a4479a994a2f19c14d9c68a19c9d8061c}{type}} == GRAY\_RASTER) \{}
+\DoxyCodeLine{367         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}** raster2D = (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}**) image-\/>raster2D;}
+\DoxyCodeLine{368         \textcolor{keywordflow}{return} raster2D[row][col];}
+\DoxyCodeLine{369     \}}
+\DoxyCodeLine{370     \textcolor{keywordflow}{return} 0;}
+\DoxyCodeLine{371 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_a3c2758e12ecc0d8200eb134227894101}\label{pthread_2Version2_2main_8cpp_a3c2758e12ecc0d8200eb134227894101}} 
+\index{main.cpp@{main.cpp}!copyPixel@{copyPixel}}
+\index{copyPixel@{copyPixel}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{copyPixel()}{copyPixel()}}
+{\footnotesize\ttfamily void copy\+Pixel (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structRasterImage}{Raster\+Image}} $\ast$}]{src\+Image,  }\item[{\mbox{\hyperlink{structRasterImage}{Raster\+Image}} $\ast$}]{dst\+Image,  }\item[{int}]{row,  }\item[{int}]{col }\end{DoxyParamCaption})}
+
+
+
+Function used to Write the best pixel to the Output Image. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em src\+Image} & pointer to the image to copy from \\
+\hline
+{\em dst\+Image} & Pointer to the image to write to \\
+\hline
+{\em row} & Row of the pixel to write to \\
+\hline
+{\em col} & Column of the pixel to write to \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 380 of file main.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{380                                                                                \{}
+\DoxyCodeLine{381     \textcolor{keywordflow}{if} (srcImage-\/>\mbox{\hyperlink{structRasterImage_a4479a994a2f19c14d9c68a19c9d8061c}{type}} == RGBA32\_RASTER \&\& dstImage-\/>\mbox{\hyperlink{structRasterImage_a4479a994a2f19c14d9c68a19c9d8061c}{type}} == RGBA32\_RASTER) \{}
+\DoxyCodeLine{382         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}** srcRaster2D = (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}**) srcImage-\/>raster2D;}
+\DoxyCodeLine{383         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}** dstRaster2D = (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}**) dstImage-\/>raster2D;}
+\DoxyCodeLine{384 }
+\DoxyCodeLine{385         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < 4; i++) \{ \textcolor{comment}{// Copy RGBA channels}}
+\DoxyCodeLine{386             dstRaster2D[row][col * 4 + i] = srcRaster2D[row][col * 4 + i];}
+\DoxyCodeLine{387         \}}
+\DoxyCodeLine{388     \}}
+\DoxyCodeLine{389     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (srcImage-\/>\mbox{\hyperlink{structRasterImage_a4479a994a2f19c14d9c68a19c9d8061c}{type}} == GRAY\_RASTER \&\& dstImage-\/>\mbox{\hyperlink{structRasterImage_a4479a994a2f19c14d9c68a19c9d8061c}{type}} == GRAY\_RASTER) \{}
+\DoxyCodeLine{390         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}** srcRaster2D = (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}**) srcImage-\/>raster2D;}
+\DoxyCodeLine{391         \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}** dstRaster2D = (\textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char}**) dstImage-\/>raster2D;}
+\DoxyCodeLine{392 }
+\DoxyCodeLine{393         dstRaster2D[row][col] = srcRaster2D[row][col];}
+\DoxyCodeLine{394     \}}
+\DoxyCodeLine{395 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_a2c5d4d7afedea4d90f963d27b78adb44}\label{pthread_2Version2_2main_8cpp_a2c5d4d7afedea4d90f963d27b78adb44}} 
+\index{main.cpp@{main.cpp}!displayImage@{displayImage}}
+\index{displayImage@{displayImage}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{displayImage()}{displayImage()}}
+{\footnotesize\ttfamily void display\+Image (\begin{DoxyParamCaption}\item[{GLfloat}]{scaleX,  }\item[{GLfloat}]{scaleY }\end{DoxyParamCaption})}
+
+
+
+Displays the processed image. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em scaleX} & Scaling for x. \\
+\hline
+{\em scaleY} & Scaling for y. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 136 of file main.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{137 \{}
+\DoxyCodeLine{138     \textcolor{comment}{//==============================================}}
+\DoxyCodeLine{139     \textcolor{comment}{//  This is OpenGL/glut magic.  Don't touch}}
+\DoxyCodeLine{140     \textcolor{comment}{//==============================================}}
+\DoxyCodeLine{141     glClear(GL\_COLOR\_BUFFER\_BIT | GL\_DEPTH\_BUFFER\_BIT);}
+\DoxyCodeLine{142     glMatrixMode(GL\_MODELVIEW);}
+\DoxyCodeLine{143     glLoadIdentity();}
+\DoxyCodeLine{144     glPixelZoom(scaleX, scaleY);}
+\DoxyCodeLine{145 }
+\DoxyCodeLine{146     \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{147     \textcolor{comment}{//  stuff to replace or remove.}}
+\DoxyCodeLine{148     \textcolor{comment}{//  Here, each time we render the image I assign a random}}
+\DoxyCodeLine{149     \textcolor{comment}{//  color to a few random pixels}}
+\DoxyCodeLine{150     \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{151     }
+\DoxyCodeLine{152     \textcolor{comment}{//==============================================}}
+\DoxyCodeLine{153     \textcolor{comment}{//  This is OpenGL/glut magic.  Don't touch}}
+\DoxyCodeLine{154     \textcolor{comment}{//==============================================}}
+\DoxyCodeLine{155     glDrawPixels(\mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_a1c84f229fd05c8cc02fd150670dfc06c}{imageOut}}-\/>\mbox{\hyperlink{structRasterImage_ac38be5d7e9aeb6891e02e1e94797d4c7}{width}}, \mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_a1c84f229fd05c8cc02fd150670dfc06c}{imageOut}}-\/>\mbox{\hyperlink{structRasterImage_a85508d66a7f21584b3bd45305e0da93e}{height}},}
+\DoxyCodeLine{156                   GL\_RGBA,}
+\DoxyCodeLine{157                   GL\_UNSIGNED\_BYTE,}
+\DoxyCodeLine{158                   \mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_a1c84f229fd05c8cc02fd150670dfc06c}{imageOut}}-\/>\mbox{\hyperlink{structRasterImage_ae8a5bd301424568712ea7c9af242615e}{raster}});}
+\DoxyCodeLine{159 }
+\DoxyCodeLine{160 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_a3a916f61fd1ca9569605594e28c2c567}\label{pthread_2Version2_2main_8cpp_a3a916f61fd1ca9569605594e28c2c567}} 
+\index{main.cpp@{main.cpp}!focusStackingThread@{focusStackingThread}}
+\index{focusStackingThread@{focusStackingThread}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{focusStackingThread()}{focusStackingThread()}}
+{\footnotesize\ttfamily void $\ast$ focus\+Stacking\+Thread (\begin{DoxyParamCaption}\item[{void $\ast$}]{arg }\end{DoxyParamCaption})}
+
+
+
+Function used for the work of each thread. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em arg} & This is a struct that stores the pointers needed information \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 431 of file main.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{431                                      \{}
+\DoxyCodeLine{432     \mbox{\hyperlink{structThreadData}{ThreadData}}* data = \textcolor{keyword}{static\_cast<}\mbox{\hyperlink{structThreadData}{ThreadData}}*\textcolor{keyword}{>}(arg);}
+\DoxyCodeLine{433     std::default\_random\_engine generator;}
+\DoxyCodeLine{434     std::uniform\_int\_distribution<int> distributionRow(0, data-\/>outputImage-\/>\mbox{\hyperlink{structRasterImage_a85508d66a7f21584b3bd45305e0da93e}{height}} -\/ 1);}
+\DoxyCodeLine{435     std::uniform\_int\_distribution<int> distributionCol(0, data-\/>outputImage-\/>\mbox{\hyperlink{structRasterImage_ac38be5d7e9aeb6891e02e1e94797d4c7}{width}} -\/ 1);}
+\DoxyCodeLine{436     \textcolor{keywordtype}{int} windowSize = 11; \textcolor{comment}{// Or 13 as per your requirement}}
+\DoxyCodeLine{437 }
+\DoxyCodeLine{438     \textcolor{keywordflow}{while} (\textcolor{keyword}{true}) \{}
+\DoxyCodeLine{439         \textcolor{keywordtype}{int} centerRow = distributionRow(generator);  \textcolor{comment}{// Random row}}
+\DoxyCodeLine{440         \textcolor{keywordtype}{int} centerCol = distributionCol(generator);  \textcolor{comment}{// Random column}}
+\DoxyCodeLine{441 }
+\DoxyCodeLine{442         \textcolor{keywordtype}{double} highestContrast = -\/1.0;}
+\DoxyCodeLine{443         \textcolor{keywordtype}{int} bestImageIndex = -\/1;}
+\DoxyCodeLine{444 }
+\DoxyCodeLine{445         \textcolor{comment}{// Calculate contrast and find best image}}
+\DoxyCodeLine{446         \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} imgIndex = 0; imgIndex < data-\/>imageStack.size(); ++imgIndex) \{}
+\DoxyCodeLine{447             \textcolor{keywordtype}{double} contrast = \mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_a1f91ed519918fe218d685c150824b061}{calculateWindowContrast}}(data-\/>imageStack[imgIndex], centerRow, centerCol, windowSize);}
+\DoxyCodeLine{448             \textcolor{keywordflow}{if} (contrast > highestContrast) \{}
+\DoxyCodeLine{449                 highestContrast = contrast;}
+\DoxyCodeLine{450                 bestImageIndex = imgIndex;}
+\DoxyCodeLine{451             \}}
+\DoxyCodeLine{452         \}}
+\DoxyCodeLine{453 }
+\DoxyCodeLine{454         \textcolor{comment}{// Lock for writing to the output image}}
+\DoxyCodeLine{455         pthread\_mutex\_lock(\&\mbox{\hyperlink{C_09_09__thread_2Version2_2main_8cpp_a0a0faabdb84971a0a12bec397e68c35c}{myMutex}});}
+\DoxyCodeLine{456         \textcolor{keywordflow}{if} (bestImageIndex != -\/1) \{}
+\DoxyCodeLine{457             \textcolor{comment}{// Write pixels from the best image to the output image}}
+\DoxyCodeLine{458             \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = -\/windowSize / 2; i <= windowSize / 2; ++i) \{}
+\DoxyCodeLine{459                 \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} j = -\/windowSize / 2; j <= windowSize / 2; ++j) \{}
+\DoxyCodeLine{460                     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} targetRow = centerRow + i;}
+\DoxyCodeLine{461                     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} targetCol = centerCol + j;}
+\DoxyCodeLine{462                     \textcolor{keywordflow}{if} (targetRow >= 0 \&\& targetRow < data-\/>outputImage-\/>height \&\& targetCol >= 0 \&\& targetCol < data-\/>outputImage-\/>width) \{}
+\DoxyCodeLine{463                         \mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_a3c2758e12ecc0d8200eb134227894101}{copyPixel}}(data-\/>imageStack[bestImageIndex], data-\/>outputImage, targetRow, targetCol);}
+\DoxyCodeLine{464                     \}}
+\DoxyCodeLine{465                 \}}
+\DoxyCodeLine{466             \}}
+\DoxyCodeLine{467         \}}
+\DoxyCodeLine{468         pthread\_mutex\_unlock(\&\mbox{\hyperlink{C_09_09__thread_2Version2_2main_8cpp_a0a0faabdb84971a0a12bec397e68c35c}{myMutex}});}
+\DoxyCodeLine{469     \}}
+\DoxyCodeLine{470     \textcolor{keyword}{delete} data; \textcolor{comment}{// Clean up}}
+\DoxyCodeLine{471     \textcolor{keywordflow}{return} NULL;}
+\DoxyCodeLine{472 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_a2e20974b164272064b3fd1c2442711fe}\label{pthread_2Version2_2main_8cpp_a2e20974b164272064b3fd1c2442711fe}} 
+\index{main.cpp@{main.cpp}!initializeApplication@{initializeApplication}}
+\index{initializeApplication@{initializeApplication}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{initializeApplication()}{initializeApplication()}}
+{\footnotesize\ttfamily void initialize\+Application (\begin{DoxyParamCaption}\item[{std\+::string \&}]{output\+Path,  }\item[{std\+::vector$<$ std\+::string $>$ \&}]{Vec\+\_\+of\+\_\+\+File\+Paths,  }\item[{std\+::vector$<$ \mbox{\hyperlink{structRasterImage}{Raster\+Image}} $\ast$ $>$ \&}]{image\+Stack }\end{DoxyParamCaption})}
+
+
+
+Initializes the application. 
+
+Initalizes the main componants of the program.
+
+
+\begin{DoxyParams}{Parameters}
+{\em output\+Path} & The path where the output image will be saved. \\
+\hline
+{\em Vec\+\_\+of\+\_\+\+File\+Paths} & Vector of file paths for input images. \\
+\hline
+{\em image\+Stack} & Vector to store the loaded images.\\
+\hline
+{\em Vec\+\_\+of\+\_\+\+File\+Paths} & Vector of each of the file paths \\
+\hline
+{\em image\+Stack} & Stack of pointers to the images \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 328 of file main.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{328                                                                                                                              \{}
+\DoxyCodeLine{329 }
+\DoxyCodeLine{330 }
+\DoxyCodeLine{331     \mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_a5a71782ebcbf35c821859558761c76f7}{message}} = (\textcolor{keywordtype}{char}**) malloc(\mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_a6f4acdbb98c3308e1e755cf5e01a4fe7}{MAX\_NUM\_MESSAGES}}*\textcolor{keyword}{sizeof}(\textcolor{keywordtype}{char}*));}
+\DoxyCodeLine{332     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} k=0; k<\mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_a6f4acdbb98c3308e1e755cf5e01a4fe7}{MAX\_NUM\_MESSAGES}}; k++)}
+\DoxyCodeLine{333         \mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_a5a71782ebcbf35c821859558761c76f7}{message}}[k] = (\textcolor{keywordtype}{char}*) malloc((\mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_a4427879eb43005a709988ec34c6d0536}{MAX\_LENGTH\_MESSAGE}}+1)*\textcolor{keyword}{sizeof}(\textcolor{keywordtype}{char}));}
+\DoxyCodeLine{334     }
+\DoxyCodeLine{335 }
+\DoxyCodeLine{336     \textcolor{comment}{// Load the image stack}}
+\DoxyCodeLine{337     \textcolor{keywordflow}{for}(\textcolor{keyword}{const} \textcolor{keyword}{auto}\& filePath : Vec\_of\_FilePaths) \{}
+\DoxyCodeLine{338         \mbox{\hyperlink{structRasterImage}{RasterImage}}* img = readTGA(filePath.c\_str());}
+\DoxyCodeLine{339         imageStack.push\_back(img);}
+\DoxyCodeLine{340     \}}
+\DoxyCodeLine{341 }
+\DoxyCodeLine{342     \textcolor{comment}{// Initialize the output image}}
+\DoxyCodeLine{343     \textcolor{keywordflow}{if}(!imageStack.empty())\{}
+\DoxyCodeLine{344         \mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_a1c84f229fd05c8cc02fd150670dfc06c}{imageOut}} = \textcolor{keyword}{new} \mbox{\hyperlink{structRasterImage}{RasterImage}}(imageStack[0]-\/>width, imageStack[0]-\/>height, imageStack[0]-\/>type);}
+\DoxyCodeLine{345     \}}
+\DoxyCodeLine{346     }
+\DoxyCodeLine{347     \mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_a58f95dced7f33e61073e92078b2cff24}{launchTime}} = time(NULL);}
+\DoxyCodeLine{348 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}\label{pthread_2Version2_2main_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}} 
+\index{main.cpp@{main.cpp}!main@{main}}
+\index{main@{main}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char $\ast$$\ast$}]{argv }\end{DoxyParamCaption})}
+
+
+
+Main function of the application. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em argc} & Argument count. \\
+\hline
+{\em argv} & Argument vector. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Exit status. 
+\end{DoxyReturn}
+
+
+Definition at line 270 of file main.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{271 \{}
+\DoxyCodeLine{272     \textcolor{keywordflow}{if} (argc < 4) \{}
+\DoxyCodeLine{273         cerr << \textcolor{stringliteral}{"{}Usage: "{}} << argv[0] << \textcolor{stringliteral}{"{} <num\_threads> <output\_path> <input\_path>"{}} << endl;}
+\DoxyCodeLine{274         \textcolor{keywordflow}{return} 1;}
+\DoxyCodeLine{275     \}}
+\DoxyCodeLine{276 }
+\DoxyCodeLine{277     \textcolor{keywordtype}{int} numThreads = atoi(argv[1]);}
+\DoxyCodeLine{278     \mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_af8b2bd66ffc3fbf507c9d89cadfacf27}{outputPath}} = argv[2];}
+\DoxyCodeLine{279     std::vector<std::string> Vec\_of\_FilePaths;}
+\DoxyCodeLine{280     \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int} i = 3; i < argc; i++)\{}
+\DoxyCodeLine{281      Vec\_of\_FilePaths.push\_back(argv[i]);}
+\DoxyCodeLine{282     \}}
+\DoxyCodeLine{283     std::vector<RasterImage*> imageStack;}
+\DoxyCodeLine{284     \textcolor{comment}{//  Now we can do application-\/level initialization}}
+\DoxyCodeLine{285     \mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_a2e20974b164272064b3fd1c2442711fe}{initializeApplication}}(\mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_af8b2bd66ffc3fbf507c9d89cadfacf27}{outputPath}},Vec\_of\_FilePaths,imageStack);}
+\DoxyCodeLine{286 }
+\DoxyCodeLine{287     \textcolor{comment}{//  Even though we extracted the relevant information from the argument}}
+\DoxyCodeLine{288     \textcolor{comment}{//  list, I still need to pass argc and argv to the front-\/end init}}
+\DoxyCodeLine{289     \textcolor{comment}{//  function because that function passes them to glutInit, the required call}}
+\DoxyCodeLine{290     \textcolor{comment}{//  to the initialization of the glut library.}}
+\DoxyCodeLine{291     initializeFrontEnd(argc, argv, \mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_a1c84f229fd05c8cc02fd150670dfc06c}{imageOut}});}
+\DoxyCodeLine{292 }
+\DoxyCodeLine{293     \textcolor{comment}{// Create and start threads}}
+\DoxyCodeLine{294     std::vector<pthread\_t> \mbox{\hyperlink{C_09_09__thread_2Version3_2main_8cpp_a08a20e9e5097748946810b9c9e5d7601}{threads}}(numThreads);}
+\DoxyCodeLine{295     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < numThreads; ++i) \{}
+\DoxyCodeLine{296         \mbox{\hyperlink{structThreadData}{ThreadData}}* data = \textcolor{keyword}{new} \mbox{\hyperlink{structThreadData}{ThreadData}}\{imageStack, \mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_a1c84f229fd05c8cc02fd150670dfc06c}{imageOut}}\};}
+\DoxyCodeLine{297         pthread\_create(\&\mbox{\hyperlink{C_09_09__thread_2Version3_2main_8cpp_a08a20e9e5097748946810b9c9e5d7601}{threads}}[i], NULL, \mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_a41613f6f09af53b61d2780eb36dc20be}{focusStackingThread}}, data);}
+\DoxyCodeLine{298     \}}
+\DoxyCodeLine{299 }
+\DoxyCodeLine{300     \textcolor{comment}{// Wait for all threads to complete}}
+\DoxyCodeLine{301     }
+\DoxyCodeLine{302     }
+\DoxyCodeLine{303 }
+\DoxyCodeLine{304     \textcolor{comment}{//==============================================}}
+\DoxyCodeLine{305     \textcolor{comment}{//  This is OpenGL/glut magic.  Don't touch}}
+\DoxyCodeLine{306     \textcolor{comment}{//==============================================}}
+\DoxyCodeLine{307     \textcolor{comment}{//  Now we enter the main loop of the program and to a large extend}}
+\DoxyCodeLine{308     \textcolor{comment}{//  "{}lose control"{} over its execution.  The callback functions that}}
+\DoxyCodeLine{309     \textcolor{comment}{//  we set up earlier will be called when the corresponding event}}
+\DoxyCodeLine{310     \textcolor{comment}{//  occurs}}
+\DoxyCodeLine{311     glutMainLoop();}
+\DoxyCodeLine{312     }
+\DoxyCodeLine{313 }
+\DoxyCodeLine{314     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{int} i = 0; i < numThreads; ++i) \{}
+\DoxyCodeLine{315         pthread\_join(\mbox{\hyperlink{C_09_09__thread_2Version3_2main_8cpp_a08a20e9e5097748946810b9c9e5d7601}{threads}}[i], NULL);}
+\DoxyCodeLine{316     \}}
+\DoxyCodeLine{317     \textcolor{comment}{//  This will probably never be executed (the exit point will be in one of the}}
+\DoxyCodeLine{318     \textcolor{comment}{//  call back functions).}}
+\DoxyCodeLine{319     \textcolor{keywordflow}{return} 0;}
+\DoxyCodeLine{320 \}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{pthread_2Version2_2main_8cpp_a2380242ef771b5a0d59cce4a680dc9df}\label{pthread_2Version2_2main_8cpp_a2380242ef771b5a0d59cce4a680dc9df}} 
+\index{main.cpp@{main.cpp}!myKeyboard@{myKeyboard}}
+\index{myKeyboard@{myKeyboard}!main.cpp@{main.cpp}}
+\doxysubsubsection{\texorpdfstring{myKeyboard()}{myKeyboard()}}
+{\footnotesize\ttfamily void my\+Keyboard (\begin{DoxyParamCaption}\item[{unsigned char}]{c,  }\item[{int}]{x,  }\item[{int}]{y }\end{DoxyParamCaption})}
+
+
+
+Handles keyboard events. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c} & Character representing the keyboard input. \\
+\hline
+{\em x} & The x-\/coordinate of the mouse cursor. \\
+\hline
+{\em y} & The y-\/coordinate of the mouse cursor. \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 266 of file gl\+\_\+front\+End.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{267 \{}
+\DoxyCodeLine{268     \mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_a4e3aad696a6bfbc2d854fbe9ab89a288}{handleKeyboardEvent}}(c, x, y);}
+\DoxyCodeLine{269     }
+\DoxyCodeLine{270     \textcolor{comment}{//==============================================}}
+\DoxyCodeLine{271     \textcolor{comment}{//  This is OpenGL/glut magic.  Don't touch}}
+\DoxyCodeLine{272     \textcolor{comment}{//==============================================}}
+\DoxyCodeLine{273     glutSetWindow(\mbox{\hyperlink{C_09_09__thread_2Version1_2main_8cpp_a57448c606d448281e8bc23a38ecbf7d8}{gMainWindow}});}
+\DoxyCodeLine{274     glutPostRedisplay();}
+\DoxyCodeLine{275 \}}
+
+\end{DoxyCode}

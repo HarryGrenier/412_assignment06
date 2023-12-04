@@ -1,0 +1,71 @@
+\hypertarget{structThreadData}{}\doxysection{Thread\+Data Struct Reference}
+\label{structThreadData}\index{ThreadData@{ThreadData}}
+
+
+A struct to hold thread-\/specific data for focus stacking.  
+
+
+
+
+Collaboration diagram for Thread\+Data\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=186pt]{structThreadData__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structThreadData_aadb3ba4e43cd8765676e06fa5d1f4af6}\label{structThreadData_aadb3ba4e43cd8765676e06fa5d1f4af6}} 
+{\bfseries Thread\+Data} (std\+::vector$<$ \mbox{\hyperlink{structRasterImage}{Raster\+Image}} $\ast$ $>$ img\+Stack, \mbox{\hyperlink{structRasterImage}{Raster\+Image}} $\ast$out\+Img, int s\+Row, int e\+Row)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structThreadData_a823baa64cbd52a591ee4f33282901564}\label{structThreadData_a823baa64cbd52a591ee4f33282901564}} 
+std\+::vector$<$ \mbox{\hyperlink{structRasterImage}{Raster\+Image}} $\ast$ $>$ {\bfseries image\+Stack}
+\item 
+\mbox{\Hypertarget{structThreadData_a638ec89bd9aee77da143877c157ea1df}\label{structThreadData_a638ec89bd9aee77da143877c157ea1df}} 
+\mbox{\hyperlink{structRasterImage}{Raster\+Image}} $\ast$ {\bfseries output\+Image}
+\item 
+\mbox{\Hypertarget{structThreadData_ab2dd4da596549919b7fd0dddcd149f2d}\label{structThreadData_ab2dd4da596549919b7fd0dddcd149f2d}} 
+int {\bfseries start\+Row}
+\item 
+\mbox{\Hypertarget{structThreadData_ab0dcd9d71f2f9663d71ef6ebcb3a2ac3}\label{structThreadData_ab0dcd9d71f2f9663d71ef6ebcb3a2ac3}} 
+int {\bfseries end\+Row}
+\item 
+\mbox{\Hypertarget{structThreadData_a5ca7db6416f091059e09436c466bb7a4}\label{structThreadData_a5ca7db6416f091059e09436c466bb7a4}} 
+unsigned int {\bfseries start\+Row}
+\item 
+\mbox{\Hypertarget{structThreadData_a829f35480d47f12679cb069a564bc17c}\label{structThreadData_a829f35480d47f12679cb069a564bc17c}} 
+unsigned int {\bfseries end\+Row}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A struct to hold thread-\/specific data for focus stacking. 
+
+This struct is used to pass multiple parameters to the thread function
+
+
+\begin{DoxyParams}{Parameters}
+{\em image\+Stack} & A vector of pointers to a stack of images \\
+\hline
+{\em output\+Image} & A pointer to the output image \\
+\hline
+{\em start\+Row} & The starting row index for this thread \\
+\hline
+{\em end\+Row} & The ending row index for this thread \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 331 of file main.\+cpp.
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/harry/\+Desktop/412\+\_\+assignment06/\+Prog06/\+Programs/pthread/\+Version1/\mbox{\hyperlink{pthread_2Version1_2main_8cpp}{main.\+cpp}}\end{DoxyCompactItemize}
